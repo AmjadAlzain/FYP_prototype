@@ -23,7 +23,6 @@ This approach allows the entire process—from image capture to final classifica
 * **On-Device Intelligence**: All processing happens locally. No cloud servers or internet connection required for inference.
 * **Extremely Low-Cost**: Built on affordable, off-the-shelf microcontroller hardware.
 * **On-Device Learning**: The HDC model supports on-device updates, allowing the system to learn from new examples in the field without a full retraining cycle.
-* **Robust Dataset**: Trained on a combination of real-world data from industry partners and the synthetic **SeaFront** dataset, enhanced with extensive data augmentation.
 
 ## Project Structure
 
