@@ -7,7 +7,7 @@ University: University of Malaya, Faculty of Computer Science & Information Tech
 
 GitHub Repository: https://github.com/AmjadAlzain/FYP_prototype
 
-📖 Project Overview
+Project Overview
 This project presents a lightweight, edge-native container anomaly detection system designed to run entirely on a resource-constrained ESP32-S3-EYE microcontroller. The system addresses the critical need for fast, accurate, and cost-effective inspection of shipping containers in the logistics industry. By leveraging cutting-edge TinyML techniques, this solution automates the detection of structural damage like dents, cracks, and perforations, overcoming the limitations of manual inspections and expensive, cloud-reliant AI models.
 
 The core of the system is a novel two-stage AI pipeline:
@@ -18,7 +18,7 @@ A Hyperdimensional Computing (HDC) classifier then analyzes the features to robu
 
 This approach allows the entire process—from image capture to final classification—to run in real-time on the edge device, ensuring privacy, eliminating latency, and removing the need for constant internet connectivity.
 
-✨ Key Features
+Key Features
 High-Accuracy Detection: A hybrid CNN and HDC model provides robust classification of container damage.
 
 Real-Time Performance: Optimized to run at ~8-15 FPS on the ESP32-S3-EYE.
