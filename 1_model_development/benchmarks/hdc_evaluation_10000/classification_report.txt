@@ -1,0 +1,11 @@
+              precision    recall  f1-score   support
+
+      damage       0.39      0.52      0.45       245
+   no_damage       0.68      0.76      0.72       182
+     pothole       0.86      0.72      0.79       235
+     rutting       0.99      0.92      0.95      7440
+     shoving       0.33      0.97      0.49       246
+
+    accuracy                           0.90      8348
+   macro avg       0.65      0.78      0.68      8348
+weighted avg       0.94      0.90      0.91      8348

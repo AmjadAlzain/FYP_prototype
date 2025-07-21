@@ -1,0 +1,22 @@
+--- Sample Test Case Predictions (4096 Dimensions) ---
+
+Sample 1: Predicted: axis, Actual: axis -> CORRECT
+Sample 2: Predicted: axis, Actual: axis -> CORRECT
+Sample 3: Predicted: concave, Actual: axis -> INCORRECT
+Sample 4: Predicted: axis, Actual: axis -> CORRECT
+Sample 5: Predicted: concave, Actual: axis -> INCORRECT
+Sample 6: Predicted: concave, Actual: axis -> INCORRECT
+Sample 7: Predicted: axis, Actual: axis -> CORRECT
+Sample 8: Predicted: axis, Actual: axis -> CORRECT
+Sample 9: Predicted: no_damage, Actual: axis -> INCORRECT
+Sample 10: Predicted: no_damage, Actual: axis -> INCORRECT
+Sample 11: Predicted: axis, Actual: axis -> CORRECT
+Sample 12: Predicted: concave, Actual: axis -> INCORRECT
+Sample 13: Predicted: no_damage, Actual: axis -> INCORRECT
+Sample 14: Predicted: axis, Actual: axis -> CORRECT
+Sample 15: Predicted: axis, Actual: axis -> CORRECT
+Sample 16: Predicted: concave, Actual: axis -> INCORRECT
+Sample 17: Predicted: axis, Actual: axis -> CORRECT
+Sample 18: Predicted: concave, Actual: axis -> INCORRECT
+Sample 19: Predicted: concave, Actual: axis -> INCORRECT
+Sample 20: Predicted: axis, Actual: axis -> CORRECT

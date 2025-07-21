@@ -1,0 +1,102 @@
+--- Sample Test Case Predictions ---
+
+Sample 1:
+  - Predicted: damage
+  - Actual:    damage
+  - Result:    CORRECT
+
+Sample 2:
+  - Predicted: rutting
+  - Actual:    damage
+  - Result:    INCORRECT
+
+Sample 3:
+  - Predicted: damage
+  - Actual:    damage
+  - Result:    CORRECT
+
+Sample 4:
+  - Predicted: damage
+  - Actual:    damage
+  - Result:    CORRECT
+
+Sample 5:
+  - Predicted: damage
+  - Actual:    damage
+  - Result:    CORRECT
+
+Sample 6:
+  - Predicted: no_damage
+  - Actual:    damage
+  - Result:    INCORRECT
+
+Sample 7:
+  - Predicted: damage
+  - Actual:    damage
+  - Result:    CORRECT
+
+Sample 8:
+  - Predicted: damage
+  - Actual:    damage
+  - Result:    CORRECT
+
+Sample 9:
+  - Predicted: no_damage
+  - Actual:    damage
+  - Result:    INCORRECT
+
+Sample 10:
+  - Predicted: no_damage
+  - Actual:    damage
+  - Result:    INCORRECT
+
+Sample 11:
+  - Predicted: no_damage
+  - Actual:    damage
+  - Result:    INCORRECT
+
+Sample 12:
+  - Predicted: no_damage
+  - Actual:    damage
+  - Result:    INCORRECT
+
+Sample 13:
+  - Predicted: rutting
+  - Actual:    damage
+  - Result:    INCORRECT
+
+Sample 14:
+  - Predicted: no_damage
+  - Actual:    damage
+  - Result:    INCORRECT
+
+Sample 15:
+  - Predicted: damage
+  - Actual:    damage
+  - Result:    CORRECT
+
+Sample 16:
+  - Predicted: damage
+  - Actual:    damage
+  - Result:    CORRECT
+
+Sample 17:
+  - Predicted: damage
+  - Actual:    damage
+  - Result:    CORRECT
+
+Sample 18:
+  - Predicted: damage
+  - Actual:    damage
+  - Result:    CORRECT
+
+Sample 19:
+  - Predicted: damage
+  - Actual:    damage
+  - Result:    CORRECT
+
+Sample 20:
+  - Predicted: damage
+  - Actual:    damage
+  - Result:    CORRECT
+

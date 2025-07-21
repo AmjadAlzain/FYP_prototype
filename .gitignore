@@ -1,0 +1,65 @@
+# IDE and environment files
+.idea/
+.vscode/
+*.iml
+*.iws
+*.ipr
+*.zip
+
+# Python virtual environments
+.venv/
+.venv_backup/
+.venv_convert/
+.venv_final/
+.venv_test/
+.venv_train/
+venv_onnx/
+
+# Build artifacts and caches
+build/
+dist/
+*.pyc
+__pycache__/
+*.o
+*.a
+*.lib
+*.so
+
+# ESP-IDF build outputs
+/2_firmware_esp32/build/
+/2_firmware_esp32/sdkconfig
+/2_firmware_esp32/sdkconfig.old
+/2_firmware_esp32/dependencies.lock
+
+# Test reports and logs
+*.log
+*.csv
+*.json
+*.xlsx
+test_report_*
+
+# Other temporary files
+/temp_project/
+/output_images/
+/output_images_final_pipeline/
+
+# ESP-IDF managed components
+/managed_components/
+/2_firmware_esp32/managed_components/
+
+# Backup folders
+/Firmware_bac/
+
+/mcunet/
+/SeaFront_v1_0_0/
+/SeaFront_v1_0_0_TEST/
+/Prototype/
+/storage/
+/processed_detection_dataset/
+/processed_damage_dataset/
+/escape/
+/3_documentation/fyp2_viva_presentation.tex/
+/3_documentation/fyp2_viva_presentation_canva_outline.md/
+/3_documentation/fyp2_viva_presentation_minimalist.tex/
+/3_documentation/summarizedcontextmenu.md/
+/testing_video/

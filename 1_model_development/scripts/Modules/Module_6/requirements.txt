@@ -1,0 +1,11 @@
+# ESP32-S3-EYE Container Detection GUI Requirements
+# Install with: pip install -r requirements.txt
+
+PyQt6>=6.4.0
+opencv-python>=4.7.0
+numpy>=1.21.0
+pyserial>=3.5
+Pillow>=9.0.0
+
+# Optional but recommended for better performance
+opencv-contrib-python>=4.7.0

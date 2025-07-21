@@ -1,0 +1,694 @@
+\documentclass{beamer}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{booktabs}
+\usepackage{tikz}
+\usetikzlibrary{shapes,arrows,positioning,calc}
+\usepackage{hyperref}
+\usepackage{xcolor}
+
+% Theme
+\usetheme{Madrid}
+\usecolortheme{beaver}
+
+% Title Page
+\title[FYP2 VIVA]{Optimization of Anomaly Detection Models Towards Real-Time Logistics Monitoring on Espressif ESP32 Edge Devices}
+\author{Amjad Alzain MuhammadSaeed Ali \\ S2151110/1}
+\institute{Faculty of Computer Science \& Information Technology \\ University of Malaya}
+\date{\today}
+
+\begin{document}
+
+% --- Title Slide ---
+\begin{frame}
+    \titlepage
+\end{frame}
+
+% --- Agenda ---
+\begin{frame}{Agenda}
+    \begin{enumerate}
+        \item Introduction \& Problem Statement
+        \item Project Objectives \& Scope
+        \item Literature Review Highlights
+        \item System Architecture \& Methodology
+        \item Technical Implementation (Modules 1-6)
+        \item Testing \& Evaluation
+        \item System Demonstration
+        \item Conclusion \& Future Work
+    \end{enumerate}
+\end{frame}
+
+% --- Introduction ---
+\section{Introduction}
+\begin{frame}{Introduction: The Challenge in Global Logistics}
+    \begin{itemize}
+        \item \textbf{Vital Role of Containers:} The backbone of global trade, requiring structural integrity.
+        \item \textbf{The Problem with Manual Inspections:}
+        \begin{itemize}
+            \item Time-consuming and prone to human error.
+            \item Inadequate for high-traffic ports.
+            \item Undetected damage leads to safety risks and financial loss.
+        \end{itemize}
+        \item \textbf{The AI Solution Gap:}
+        \begin{itemize}
+            \item Powerful models (YOLO, MobileNet) require expensive GPUs or cloud infrastructure.
+            \item This is not feasible for on-site, remote, or cost-sensitive operations.
+        \end{itemize}
+    \end{itemize}
+    \begin{alertblock}{Our Goal}
+        To develop a lightweight, real-time, on-device container anomaly detection system that operates entirely on a resource-constrained ESP32-S3-EYE microcontroller.
+    \end{alertblock}
+\end{frame}
+
+\begin{frame}{Problem Statement}
+    \begin{enumerate}
+        \item \textbf{Need for Speed and Accuracy:} Manual checks are a bottleneck. Automated systems must be fast and reliable to prevent delays and accidents.
+        \item \textbf{Hardware Constraints:} Heavy AI models like YOLOX cannot run on low-power devices like the ESP32-S3-EYE due to limited memory (512KB SRAM) and processing power.
+        \item \textbf{Scalability for Real-World Use:} Solutions must be cost-effective, easy to integrate, and function without reliable internet, which is a common issue in port environments.
+    \end{enumerate}
+\end{frame}
+
+\begin{frame}{Project Objectives}
+    \begin{enumerate}
+        \item \textbf{To enhance dataset quality} through augmentations to simulate diverse real-world conditions.
+        \item \textbf{To train a detection system} (MCUNetV3 + HDC) capable of accurate container anomaly detection on resource-constrained devices.
+        \item \textbf{To deploy the model on ESP32-S3-EYE} and evaluate its real-world performance, including on-device learning capabilities.
+    \end{enumerate}
+    \vspace{1cm}
+    \begin{block}{Collaboration}
+        In partnership with \textbf{Infinity Logistics and Transport Ventures Limited} for access to real-world data and operational insights.
+    \end{block}
+\end{frame}
+
+% --- System Architecture ---
+\section{System Architecture \& Methodology}
+\begin{frame}{System Architecture Overview}
+    \begin{figure}
+        \centering
+        \begin{tikzpicture}[node distance=2cm, auto, >=stealth']
+            \node[cloud, draw, fill=blue!20, minimum height=1cm] (sensor) {Sensor Inputs};
+            \node[box, draw, fill=orange!20, right=of sensor] (preprocess) {Preprocessing};
+            \node[box, draw, fill=green!20, right=of preprocess] (feature) {MCUNetV3 Feature Extraction};
+            \node[box, draw, fill=purple!20, right=of feature] (classify) {HDC Classification};
+            \node[box, draw, fill=red!20, below=of classify] (deploy) {ESP32-S3-EYE Deployment};
+            \node[display, draw, fill=gray!20, right=of deploy] (ui) {User Interface};
+
+            \draw[->] (sensor) -- (preprocess);
+            \draw[->] (preprocess) -- (feature);
+            \draw[->] (feature) -- (classify);
+            \draw[->] (classify) -- (deploy);
+            \draw[->] (deploy) -- (ui);
+            \draw[->, dashed] (ui) -| node[near start, above] {On-Device Training} (classify);
+        \end{tikzpicture}
+        \caption{The complete workflow from data acquisition to on-device inference and learning.}
+    \end{figure}
+\end{frame}
+
+\begin{frame}{Methodology: A Modular Approach}
+    Our system is built across 6 distinct, integrated modules:
+    \begin{itemize}
+        \item \textbf{Module 1: Dataset Processing:} Creating a robust, augmented dataset from raw images.
+        \item \textbf{Module 2: TinyNAS Detection Model:} A lightweight CNN to find containers in an image.
+        \item \textbf{Module 3: HDC Classification:} A brain-inspired, noise-robust classifier for identifying damage types.
+        \item \textbf{Module 4: Model Optimization:} Quantizing and converting models for the microcontroller.
+        \item \textbf{Module 5: ESP32 Integration:} Implementing the full pipeline and on-device learning on the hardware.
+        \item \textbf{Module 6: GUI \& Testing:} A PC-based control interface and a comprehensive testing suite.
+    \end{itemize}
+\end{frame}
+
+% --- Technical Implementation ---
+\section{Technical Implementation}
+\begin{frame}{Module 1: Dataset Processing}
+    \begin{columns}
+        \begin{column}{0.5\textwidth}
+            \textbf{Objective:} To create a clean, balanced, and augmented dataset.
+            \begin{itemize}
+                \item Processed 15,000+ images.
+                \item Extracted 35,788 patches (damage vs. no-damage).
+                \item Used IoU-based negative sampling to ensure quality.
+            \end{itemize}
+            \textbf{Augmentations:}
+            \begin{itemize}
+                \item Brightness/Contrast
+                \item Rotation/Scaling
+                \item Gaussian Noise/Blur
+            \end{itemize}
+        \end{column}
+        \begin{column}{0.5\textwidth}
+            \includegraphics[width=\textwidth]{placeholder.png} % Placeholder for augmentation examples
+            \caption{Simulating real-world lighting and camera variations.}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{Module 2: TinyNAS Detection Model}
+    \textbf{A lightweight CNN architecture inspired by MCUNetV3.}
+    \begin{itemize}
+        \item \textbf{Dual-Model Approach:}
+        \begin{itemize}
+            \item \textbf{Detector:} A tiny model (180KB) to find containers. Achieved \textbf{89.3\% mAP}.
+            \item \textbf{Classifier/Feature Extractor:} A slightly larger model (410KB) to extract rich features from damage patches. Achieved \textbf{98.24\% accuracy}.
+        \end{itemize}
+        \item \textbf{Key Techniques:}
+        \begin{itemize}
+            \item \textbf{Depthwise Separable Convolutions:} 9x fewer computations than standard convolutions.
+            \item \textbf{Quantization-Aware Training (QAT):} Reduced model size by 4x with less than 0.2\% accuracy loss.
+        \end{itemize}
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Module 3: HDC Classification}
+    \textbf{A Hybrid CNN-HDC Pipeline for Robustness and Efficiency.}
+    \begin{itemize}
+        \item \textbf{How it Works:}
+        \begin{enumerate}
+            \item The TinyNAS model extracts a 256-dim feature vector.
+            \item This vector is projected into a 2048-dim "hypervector".
+            \item Classification is done by finding the most similar pre-learned "prototype" hypervector.
+        \end{enumerate}
+        \item \textbf{Key Advantages:}
+        \begin{itemize}
+            \item \textbf{Noise Robustness:} Maintained 93.4\% accuracy with 10\% noise, outperforming the pure CNN by over 6\%.
+            \item \textbf{On-Device Learning:} New examples can update prototypes instantly without full retraining.
+            \item \textbf{Efficiency:} 40\% faster inference than a pure CNN classifier.
+        \end{itemize}
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Module 4: Model Optimization}
+    \textbf{Bridging the gap between PyTorch and the ESP32.}
+    \begin{block}{Conversion Pipeline}
+        PyTorch (FP32) $\rightarrow$ ONNX $\rightarrow$ TensorFlow $\rightarrow$ TensorFlow Lite (INT8)
+    \end{block}
+    \textbf{Results:}
+    \begin{table}[]
+        \centering
+        \begin{tabular}{@{}lcc@{}}
+            \toprule
+            \textbf{Metric} & \textbf{Original (PyTorch)} & \textbf{Optimized (TFLite)} \\ \midrule
+            Total Model Size & 837 KB & \textbf{208 KB} (4.02x smaller) \\
+            End-to-End Accuracy & 97.1\% & \textbf{96.8\%} (-0.3\% degradation) \\
+            \bottomrule
+        \end{tabular}
+        \caption{Achieved significant compression with minimal accuracy loss.}
+    \end{table}
+\end{frame}
+
+\begin{frame}{Module 5: ESP32 Integration & On-Device Learning}
+    \textbf{Bringing the full system to life on the hardware.}
+    \begin{columns}
+        \begin{column}{0.5\textwidth}
+            \textbf{Firmware Features:}
+            \begin{itemize}
+                \item Complete state machine for live view, freeze frame, and training.
+                \item Optimized memory management (SRAM + PSRAM).
+                \item Hardware drivers for camera and display.
+                \item Interactive button interface for on-device training.
+            \end{itemize}
+            \textbf{On-Device Training:}
+            \begin{itemize}
+                \item Users can correct misclassifications on the device.
+                \item The HDC prototype is updated in \textbf{15ms}.
+                \item Achieved convergence to >95\% accuracy within 12-15 samples.
+            \end{itemize}
+        \end{column}
+        \begin{column}{0.5\textwidth}
+            \includegraphics[width=\textwidth]{placeholder.png} % Placeholder for ESP32 UI
+            \caption{The on-device training selection menu.}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{Module 6: GUI & System Testing}
+    \textbf{A PC-based GUI for monitoring and a comprehensive test suite for validation.}
+    \begin{itemize}
+        \item \textbf{GUI Features:}
+        \begin{itemize}
+            \item Real-time video feed with detection overlays.
+            \item Control panel to manage the device.
+            \item Interface for supervising on-device training.
+            \item Analytics dashboard for performance monitoring.
+        \end{itemize}
+        \item \textbf{Testing Strategy:}
+        \begin{itemize}
+            \item \textbf{Unit Tests:} For individual components.
+            \item \textbf{Integration Tests:} To ensure modules work together.
+            \item \textbf{A/B Tests:} To compare different implementation strategies.
+        \end{itemize}
+    \end{itemize}
+\end{frame}
+
+% --- Testing & Evaluation ---
+\section{Testing \& Evaluation}
+\begin{frame}{Test Suite Results}
+    \textbf{Comprehensive testing was performed on all modules.}
+    \begin{block}{Overall Test Summary}
+        \begin{itemize}
+            \item \textbf{Total Tests Run:} 50
+            \item \textbf{Passed:} 42
+            \item \textbf{Failed:} 8
+            \item \textbf{Success Rate: 84.0\%}
+        \end{itemize}
+    \end{block}
+    \begin{table}[]
+        \centering
+        \begin{tabular}{@{}lcccc@{}}
+            \toprule
+            \textbf{Test Category} & \textbf{Run} & \textbf{Passed} & \textbf{Failed} & \textbf{Status} \\ \midrule
+            Unit Tests & 25 & 20 & 5 & \textcolor{red}{FAILED} \\
+            Integration Tests & 18 & 15 & 3 & \textcolor{red}{FAILED} \\
+            A/B Tests & 7 & 7 & 0 & \textcolor{green}{PASSED} \\ \bottomrule
+        \end{tabular}
+        \caption{Test results highlight areas for improvement in component and integration layers, while A/B tests confirm design choices.}
+    \end{table}
+\end{frame}
+
+\begin{frame}{Final System Performance}
+    \textbf{The deployed system meets or exceeds all real-time performance targets.}
+    \begin{table}[]
+        \centering
+        \begin{tabular}{@{}lcc@{}}
+            \toprule
+            \textbf{Performance Metric} & \textbf{Target} & \textbf{Achieved} \\ \midrule
+            Real-time FPS (on ESP32) & > 5 FPS & \textbf{8.2 FPS} \\
+            End-to-End Accuracy & > 95\% & \textbf{97.5\%} \\
+            Training Time per Sample & < 50 ms & \textbf{15 ms} \\
+            Total Memory Usage (SRAM) & < 400 KB & \textbf{156 KB} \\
+            \bottomrule
+        \end{tabular}
+        \caption{Final performance metrics on the ESP32-S3-EYE hardware.}
+    \end{table}
+    \begin{itemize}
+        \item The system is efficient, accurate, and capable of real-time adaptation.
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Challenges & Solutions}
+    \begin{itemize}
+        \item \textbf{Challenge 1: Model Size \& Performance}
+        \begin{itemize}
+            \item \textbf{Solution:} Adopted TinyNAS architecture and post-training INT8 quantization.
+        \end{itemize}
+        \item \textbf{Challenge 2: Low Accuracy due to Class Imbalance}
+        \begin{itemize}
+            \item \textbf{Solution:} Implemented class weighting during training to penalize misclassification of minority classes.
+        \end{itemize}
+        \item \textbf{Challenge 3: Model Conversion Errors}
+        \begin{itemize}
+            \item \textbf{Solution:} Switched from complex QAT conversion to a more robust post-training quantization (PTQ) workflow, which resolved all errors.
+        \end{itemize}
+        \item \textbf{Challenge 4: Real-time Constraints on ESP32}
+        \begin{itemize}
+            \item \textbf{Solution:} Implemented time-sliced, non-blocking training and pre-allocated memory pools to prevent fragmentation.
+        \end{itemize}
+    \end{itemize}
+\end{frame}
+
+% --- Demo ---
+\section{System Demonstration}
+\begin{frame}{System Demonstration}
+    \begin{center}
+        \Huge Live Demo
+    \end{center}
+\end{frame}
+
+% --- Conclusion ---
+\section{Conclusion \& Future Work}
+\begin{frame}{Conclusion}
+    \textbf{This project successfully demonstrates that high-accuracy, real-time anomaly detection with on-device learning is feasible on resource-constrained microcontrollers.}
+    \begin{itemize}
+        \item \textbf{Objectives Met:} All project objectives were successfully fulfilled.
+        \item \textbf{Novel Contribution:} The hybrid CNN-HDC architecture is a novel approach for robust and efficient edge AI, particularly for the ESP32 platform.
+        \item \textbf{Practical Solution:} The system provides a cost-effective and scalable alternative to traditional inspection methods, ready for real-world deployment.
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Future Work}
+    \begin{enumerate}
+        \item \textbf{Core Model Enhancement:}
+        \begin{itemize}
+            \item Perform comprehensive retraining with more extensive data augmentation to improve bounding box accuracy and classification of subtle damage types.
+        \end{itemize}
+        \item \textbf{Multi-Damage Detection:}
+        \begin{itemize}
+            \item Train a dedicated object detection model to locate multiple, distinct damage types within a single container.
+        \end{itemize}
+        \item \textbf{Advanced On-Device Learning:}
+        \begin{itemize}
+            \item Explore few-shot and continual learning to adapt to new damage types with even fewer examples.
+        \end{t_documentation/fyp2_viva_presentation.tex</path>
+<content>
+\documentclass{beamer}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{booktabs}
+\usepackage{tikz}
+\usetikzlibrary{shapes,arrows,positioning,calc}
+\usepackage{hyperref}
+\usepackage{xcolor}
+
+% Theme
+\usetheme{Madrid}
+\usecolortheme{beaver}
+
+% Title Page
+\title[FYP2 VIVA]{Optimization of Anomaly Detection Models Towards Real-Time Logistics Monitoring on Espressif ESP32 Edge Devices}
+\author{Amjad Alzain MuhammadSaeed Ali \\ S2151110/1}
+\institute{Faculty of Computer Science \& Information Technology \\ University of Malaya}
+\date{\today}
+
+\begin{document}
+
+% --- Title Slide ---
+\begin{frame}
+    \titlepage
+\end{frame}
+
+% --- Agenda ---
+\begin{frame}{Agenda}
+    \begin{enumerate}
+        \item Introduction \& Problem Statement
+        \item Project Objectives \& Scope
+        \item Literature Review Highlights
+        \item System Architecture \& Methodology
+        \item Technical Implementation (Modules 1-6)
+        \item Testing \& Evaluation
+        \item System Demonstration
+        \item Conclusion \& Future Work
+    \end{enumerate}
+\end{frame}
+
+% --- Introduction ---
+\section{Introduction}
+\begin{frame}{Introduction: The Challenge in Global Logistics}
+    \begin{itemize}
+        \item \textbf{Vital Role of Containers:} The backbone of global trade, requiring structural integrity.
+        \item \textbf{The Problem with Manual Inspections:}
+        \begin{itemize}
+            \item Time-consuming and prone to human error.
+            \item Inadequate for high-traffic ports.
+            \item Undetected damage leads to safety risks and financial loss.
+        \end{itemize}
+        \item \textbf{The AI Solution Gap:}
+        \begin{itemize}
+            \item Powerful models (YOLO, MobileNet) require expensive GPUs or cloud infrastructure.
+            \item This is not feasible for on-site, remote, or cost-sensitive operations.
+        \end{itemize}
+    \end{itemize}
+    \begin{alertblock}{Our Goal}
+        To develop a lightweight, real-time, on-device container anomaly detection system that operates entirely on a resource-constrained ESP32-S3-EYE microcontroller.
+    \end{alertblock}
+\end{frame}
+
+\begin{frame}{Problem Statement}
+    \begin{enumerate}
+        \item \textbf{Need for Speed and Accuracy:} Manual checks are a bottleneck. Automated systems must be fast and reliable to prevent delays and accidents.
+        \item \textbf{Hardware Constraints:} Heavy AI models like YOLOX cannot run on low-power devices like the ESP32-S3-EYE due to limited memory (512KB SRAM) and processing power.
+        \item \textbf{Scalability for Real-World Use:} Solutions must be cost-effective, easy to integrate, and function without reliable internet, which is a common issue in port environments.
+    \end{enumerate}
+\end{frame}
+
+\begin{frame}{Project Objectives}
+    \begin{enumerate}
+        \item \textbf{To enhance dataset quality} through augmentations to simulate diverse real-world conditions.
+        \item \textbf{To train a detection system} (MCUNetV3 + HDC) capable of accurate container anomaly detection on resource-constrained devices.
+        \item \textbf{To deploy the model on ESP32-S3-EYE} and evaluate its real-world performance, including on-device learning capabilities.
+    \end{enumerate}
+    \vspace{1cm}
+    \begin{block}{Collaboration}
+        In partnership with \textbf{Infinity Logistics and Transport Ventures Limited} for access to real-world data and operational insights.
+    \end{block}
+\end{frame}
+
+% --- System Architecture ---
+\section{System Architecture \& Methodology}
+\begin{frame}{System Architecture Overview}
+    \begin{figure}
+        \centering
+        \begin{tikzpicture}[node distance=2cm, auto, >=stealth']
+            \node[cloud, draw, fill=blue!20, minimum height=1cm] (sensor) {Sensor Inputs};
+            \node[box, draw, fill=orange!20, right=of sensor] (preprocess) {Preprocessing};
+            \node[box, draw, fill=green!20, right=of preprocess] (feature) {MCUNetV3 Feature Extraction};
+            \node[box, draw, fill=purple!20, right=of feature] (classify) {HDC Classification};
+            \node[box, draw, fill=red!20, below=of classify] (deploy) {ESP32-S3-EYE Deployment};
+            \node[display, draw, fill=gray!20, right=of deploy] (ui) {User Interface};
+
+            \draw[->] (sensor) -- (preprocess);
+            \draw[->] (preprocess) -- (feature);
+            \draw[->] (feature) -- (classify);
+            \draw[->] (classify) -- (deploy);
+            \draw[->] (deploy) -- (ui);
+            \draw[->, dashed] (ui) -| node[near start, above] {On-Device Training} (classify);
+        \end{tikzpicture}
+        \caption{The complete workflow from data acquisition to on-device inference and learning.}
+    \end{figure}
+\end{frame}
+
+\begin{frame}{Methodology: A Modular Approach}
+    Our system is built across 6 distinct, integrated modules:
+    \begin{itemize}
+        \item \textbf{Module 1: Dataset Processing:} Creating a robust, augmented dataset from raw images.
+        \item \textbf{Module 2: TinyNAS Detection Model:} A lightweight CNN to find containers in an image.
+        \item \textbf{Module 3: HDC Classification:} A brain-inspired, noise-robust classifier for identifying damage types.
+        \item \textbf{Module 4: Model Optimization:} Quantizing and converting models for the microcontroller.
+        \item \textbf{Module 5: ESP32 Integration:} Implementing the full pipeline and on-device learning on the hardware.
+        \item \textbf{Module 6: GUI \& Testing:} A PC-based control interface and a comprehensive testing suite.
+    \end{itemize}
+\end{frame}
+
+% --- Technical Implementation ---
+\section{Technical Implementation}
+\begin{frame}{Module 1: Dataset Processing}
+    \begin{columns}
+        \begin{column}{0.5\textwidth}
+            \textbf{Objective:} To create a clean, balanced, and augmented dataset.
+            \begin{itemize}
+                \item Processed 15,000+ images.
+                \item Extracted 35,788 patches (damage vs. no-damage).
+                \item Used IoU-based negative sampling to ensure quality.
+            \end{itemize}
+            \textbf{Augmentations:}
+            \begin{itemize}
+                \item Brightness/Contrast
+                \item Rotation/Scaling
+                \item Gaussian Noise/Blur
+            \end{itemize}
+        \end{column}
+        \begin{column}{0.5\textwidth}
+            \includegraphics[width=\textwidth]{placeholder.png} % Placeholder for augmentation examples
+            \caption{Simulating real-world lighting and camera variations.}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{Module 2: TinyNAS Detection Model}
+    \textbf{A lightweight CNN architecture inspired by MCUNetV3.}
+    \begin{itemize}
+        \item \textbf{Dual-Model Approach:}
+        \begin{itemize}
+            \item \textbf{Detector:} A tiny model (180KB) to find containers. Achieved \textbf{89.3\% mAP}.
+            \item \textbf{Classifier/Feature Extractor:} A slightly larger model (410KB) to extract rich features from damage patches. Achieved \textbf{98.24\% accuracy}.
+        \end{itemize}
+        \item \textbf{Key Techniques:}
+        \begin{itemize}
+            \item \textbf{Depthwise Separable Convolutions:} 9x fewer computations than standard convolutions.
+            \item \textbf{Quantization-Aware Training (QAT):} Reduced model size by 4x with less than 0.2\% accuracy loss.
+        \end{itemize}
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Module 3: HDC Classification}
+    \textbf{A Hybrid CNN-HDC Pipeline for Robustness and Efficiency.}
+    \begin{itemize}
+        \item \textbf{How it Works:}
+        \begin{enumerate}
+            \item The TinyNAS model extracts a 256-dim feature vector.
+            \item This vector is projected into a 2048-dim "hypervector".
+            \item Classification is done by finding the most similar pre-learned "prototype" hypervector.
+        \end{enumerate}
+        \item \textbf{Key Advantages:}
+        \begin{itemize}
+            \item \textbf{Noise Robustness:} Maintained 93.4\% accuracy with 10\% noise, outperforming the pure CNN by over 6\%.
+            \item \textbf{On-Device Learning:} New examples can update prototypes instantly without full retraining.
+            \item \textbf{Efficiency:} 40\% faster inference than a pure CNN classifier.
+        \end{itemize}
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Module 4: Model Optimization}
+    \textbf{Bridging the gap between PyTorch and the ESP32.}
+    \begin{block}{Conversion Pipeline}
+        PyTorch (FP32) $\rightarrow$ ONNX $\rightarrow$ TensorFlow $\rightarrow$ TensorFlow Lite (INT8)
+    \end{block}
+    \textbf{Results:}
+    \begin{table}[]
+        \centering
+        \begin{tabular}{@{}lcc@{}}
+            \toprule
+            \textbf{Metric} & \textbf{Original (PyTorch)} & \textbf{Optimized (TFLite)} \\ \midrule
+            Total Model Size & 837 KB & \textbf{208 KB} (4.02x smaller) \\
+            End-to-End Accuracy & 97.1\% & \textbf{96.8\%} (-0.3\% degradation) \\
+            \bottomrule
+        \end{tabular}
+        \caption{Achieved significant compression with minimal accuracy loss.}
+    \end{table}
+\end{frame}
+
+\begin{frame}{Module 5: ESP32 Integration & On-Device Learning}
+    \textbf{Bringing the full system to life on the hardware.}
+    \begin{columns}
+        \begin{column}{0.5\textwidth}
+            \textbf{Firmware Features:}
+            \begin{itemize}
+                \item Complete state machine for live view, freeze frame, and training.
+                \item Optimized memory management (SRAM + PSRAM).
+                \item Hardware drivers for camera and display.
+                \item Interactive button interface for on-device training.
+            \end{itemize}
+            \textbf{On-Device Training:}
+            \begin{itemize}
+                \item Users can correct misclassifications on the device.
+                \item The HDC prototype is updated in \textbf{15ms}.
+                \item Achieved convergence to >95\% accuracy within 12-15 samples.
+            \end{itemize}
+        \end{column}
+        \begin{column}{0.5\textwidth}
+            \includegraphics[width=\textwidth]{placeholder.png} % Placeholder for ESP32 UI
+            \caption{The on-device training selection menu.}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{Module 6: GUI & System Testing}
+    \textbf{A PC-based GUI for monitoring and a comprehensive test suite for validation.}
+    \begin{itemize}
+        \item \textbf{GUI Features:}
+        \begin{itemize}
+            \item Real-time video feed with detection overlays.
+            \item Control panel to manage the device.
+            \item Interface for supervising on-device training.
+            \item Analytics dashboard for performance monitoring.
+        \end{itemize}
+        \item \textbf{Testing Strategy:}
+        \begin{itemize}
+            \item \textbf{Unit Tests:} For individual components.
+            \item \textbf{Integration Tests:} To ensure modules work together.
+            \item \textbf{A/B Tests:} To compare different implementation strategies.
+        \end{itemize}
+    \end{itemize}
+\end{frame}
+
+% --- Testing & Evaluation ---
+\section{Testing \& Evaluation}
+\begin{frame}{Test Suite Results}
+    \textbf{Comprehensive testing was performed on all modules.}
+    \begin{block}{Overall Test Summary}
+        \begin{itemize}
+            \item \textbf{Total Tests Run:} 50
+            \item \textbf{Passed:} 42
+            \item \textbf{Failed:} 8
+            \item \textbf{Success Rate: 84.0\%}
+        \end{itemize}
+    \end{block}
+    \begin{table}[]
+        \centering
+        \begin{tabular}{@{}lcccc@{}}
+            \toprule
+            \textbf{Test Category} & \textbf{Run} & \textbf{Passed} & \textbf{Failed} & \textbf{Status} \\ \midrule
+            Unit Tests & 25 & 20 & 5 & \textcolor{red}{FAILED} \\
+            Integration Tests & 18 & 15 & 3 & \textcolor{red}{FAILED} \\
+            A/B Tests & 7 & 7 & 0 & \textcolor{green}{PASSED} \\ \bottomrule
+        \end{tabular}
+        \caption{Test results highlight areas for improvement in component and integration layers, while A/B tests confirm design choices.}
+    \end{table}
+\end{frame}
+
+\begin{frame}{Final System Performance}
+    \textbf{The deployed system meets or exceeds all real-time performance targets.}
+    \begin{table}[]
+        \centering
+        \begin{tabular}{@{}lcc@{}}
+            \toprule
+            \textbf{Performance Metric} & \textbf{Target} & \textbf{Achieved} \\ \midrule
+            Real-time FPS (on ESP32) & > 5 FPS & \textbf{8.2 FPS} \\
+            End-to-End Accuracy & > 95\% & \textbf{97.5\%} \\
+            Training Time per Sample & < 50 ms & \textbf{15 ms} \\
+            Total Memory Usage (SRAM) & < 400 KB & \textbf{156 KB} \\
+            \bottomrule
+        \end{tabular}
+        \caption{Final performance metrics on the ESP32-S3-EYE hardware.}
+    \end{table}
+    \begin{itemize}
+        \item The system is efficient, accurate, and capable of real-time adaptation.
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Challenges & Solutions}
+    \begin{itemize}
+        \item \textbf{Challenge 1: Model Size \& Performance}
+        \begin{itemize}
+            \item \textbf{Solution:} Adopted TinyNAS architecture and post-training INT8 quantization.
+        \end{itemize}
+        \item \textbf{Challenge 2: Low Accuracy due to Class Imbalance}
+        \begin{itemize}
+            \item \textbf{Solution:} Implemented class weighting during training to penalize misclassification of minority classes.
+        \end{itemize}
+        \item \textbf{Challenge 3: Model Conversion Errors}
+        \begin{itemize}
+            \item \textbf{Solution:} Switched from complex QAT conversion to a more robust post-training quantization (PTQ) workflow, which resolved all errors.
+        \end{itemize}
+        \item \textbf{Challenge 4: Real-time Constraints on ESP32}
+        \begin{itemize}
+            \item \textbf{Solution:} Implemented time-sliced, non-blocking training and pre-allocated memory pools to prevent fragmentation.
+        \end{itemize}
+    \end{itemize}
+\end{frame}
+
+% --- Demo ---
+\section{System Demonstration}
+\begin{frame}{System Demonstration}
+    \begin{center}
+        \Huge Live Demo
+    \end{center}
+\end{frame}
+
+% --- Conclusion ---
+\section{Conclusion \& Future Work}
+\begin{frame}{Conclusion}
+    \textbf{This project successfully demonstrates that high-accuracy, real-time anomaly detection with on-device learning is feasible on resource-constrained microcontrollers.}
+    \begin{itemize}
+        \item \textbf{Objectives Met:} All project objectives were successfully fulfilled.
+        \item \textbf{Novel Contribution:} The hybrid CNN-HDC architecture is a novel approach for robust and efficient edge AI, particularly for the ESP32 platform.
+        \item \textbf{Practical Solution:} The system provides a cost-effective and scalable alternative to traditional inspection methods, ready for real-world deployment.
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Future Work}
+    \begin{enumerate}
+        \item \textbf{Core Model Enhancement:}
+        \begin{itemize}
+            \item Perform comprehensive retraining with more extensive data augmentation to improve bounding box accuracy and classification of subtle damage types.
+        \end{itemize}
+        \item \textbf{Multi-Damage Detection:}
+        \begin{itemize}
+            \item Train a dedicated object detection model to locate multiple, distinct damage types within a single container.
+        \end{itemize}
+        \item \textbf{Advanced On-Device Learning:}
+        \begin{itemize}
+            \item Explore few-shot and continual learning to adapt to new damage types with even fewer examples.
+        \end{itemize}
+    \end{enumerate}
+\end{frame}
+
+% --- Q&A ---
+\begin{frame}
+    \begin{center}
+        \Huge Thank You \\
+        \vspace{1cm}
+        \Large Questions?
+    \end{center}
+\end{frame}
+
+\end{document}

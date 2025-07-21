@@ -1,0 +1,5 @@
+# components/board/idf_component.yml
+dependencies:
+  espressif/esp32_s3_eye: "~5.0.0"
+targets:
+  - esp32s3

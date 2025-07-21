@@ -1,0 +1,9 @@
+# root/idf_component.yml
+name: firmware_esp32
+version: "0.3.0"
+
+dependencies:
+  espressif/esp32_s3_eye: "5.0.0"
+  espressif/esp32-camera: "2.0.16"
+  espressif/esp-dl:       "3.1.5"
+  espressif/esp-tflite-micro: "1.3.1"

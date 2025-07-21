@@ -1,0 +1,3 @@
+# main/idf_components.yml
+dependencies:
+  espressif/esp32_s3_eye: "~5.0.0"   # Ensure the ESP32-S3-EYE BSP is included for the project

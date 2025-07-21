@@ -1,0 +1,7 @@
+# components/camera/idf_component.yml
+dependencies:
+  espressif/esp32-camera: "2.0.16"
+
+# (Optional) restrict this component to the S3 target
+targets:
+  - esp32s3

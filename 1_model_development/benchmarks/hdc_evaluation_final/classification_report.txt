@@ -1,0 +1,11 @@
+              precision    recall  f1-score   support
+
+        axis       0.94      0.83      0.88       245
+     concave       0.87      0.81      0.84       182
+     dentado       1.00      0.89      0.94       235
+   no_damage       0.99      0.99      0.99      7440
+ perforation       0.87      0.97      0.92       246
+
+    accuracy                           0.98      8348
+   macro avg       0.93      0.90      0.91      8348
+weighted avg       0.98      0.98      0.98      8348
