@@ -3,7 +3,9 @@
 **Optimization of Anomaly Detection Models Towards Real-Time Logistics Monitoring on Espressif ESP32 Edge Devices**
 
 **Author:** Amjad Alzain MuhammadSaeed Ali
+
 **University:** University of Malaya, Faculty of Computer Science & Information Technology
+
 **GitHub Repository:** https://github.com/AmjadAlzain/FYP_prototype
 
 ## Project Overview
