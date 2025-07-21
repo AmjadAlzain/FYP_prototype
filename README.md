@@ -47,4 +47,4 @@ This project is licensed under the MIT License. See the LICENSE file for more de
 
 ## Acknowledgements
 
-I would like to express my sincere appreciation to my supervisor, **Prof. Dr. Loo Chu Kiong**, for his unwavering guidance and mentorship. I am also thankful to **Dr. Saw Shier Nee**, **Dr. Unizah Binti Obeidallah**, and our industry partner, **Infinity Logistics and Transport Ventures Limited**, for their crucial feedback and support.
+I would like to express my sincere appreciation to my supervisor, **Prof. Dr. Loo Chu Kiong**, for his unwavering guidance and mentorship. I am also thankful to our industry partner, **Infinity Logistics and Transport Ventures Limited**, for their crucial feedback and support.
